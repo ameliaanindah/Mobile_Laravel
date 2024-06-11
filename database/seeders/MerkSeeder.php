@@ -13,9 +13,9 @@ class MerkSeeder extends Seeder
     public function run(): void
     {
         DB::table('merk')->insert([
-            ['nama_merk' => 'Wardah', 'gambar' => 'img/logo_wardah.png'],
-            ['nama_merk' => 'Scarlett', 'gambar' => 'img/logo_scarlett.png'],
-            ['nama_merk' => 'Skintific', 'gambar' => 'img/logo_skintific.png'],
+            ['nama_merk' => 'Wardah'],
+            ['nama_merk' => 'Scarlett'],
+            ['nama_merk' => 'Skintific'],
         ]);
     }
 }

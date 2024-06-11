@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Merk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Merk;
+use Illuminate\Support\Facades\Config;
 
 class MerkController extends Controller
 {
@@ -22,7 +23,6 @@ class MerkController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input form disini sesuai dengan kebutuhan Anda
         $request->validate([
             'nama_merk' => 'required|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -31,11 +31,10 @@ class MerkController extends Controller
         $merk = new Merk();
         $merk->nama_merk = $request->input('nama_merk');
 
-        // Mengunggah gambar (foto merk)
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $imageName = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('merkimg'), $imageName); // Ganti direktori tujuan
+            $file->move(public_path('merkimg'), $imageName);
             $merk->gambar = $imageName;
         }
 
@@ -55,7 +54,17 @@ class MerkController extends Controller
             return response()->json(['message' => 'Merk not found'], 404);
         }
 
-        return response()->json($merk, 200);
+        // Base URL for images
+        $baseImageUrl = url('merkimg');
+
+        // Add image URL to response
+        $merkWithImageUrl = [
+            'id' => $merk->id,
+            'nama_merk' => $merk->nama_merk,
+            'gambar_url' => $baseImageUrl . '/' . $merk->gambar, // Combine base URL with image file name
+        ];
+
+        return response()->json($merkWithImageUrl, 200);
     }
 
     /**
@@ -65,7 +74,6 @@ class MerkController extends Controller
     {
         $merk = Merk::find($id);
 
-        // Validasi input form disini sesuai dengan kebutuhan Anda
         $request->validate([
             'nama_merk' => 'required|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -73,13 +81,11 @@ class MerkController extends Controller
 
         $merk->nama_merk = $request->input('nama_merk');
 
-        // Mengunggah gambar (foto merk) jika dipilih
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $imageName = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('merkimg'), $imageName);
 
-            // Hapus foto lama jika ada
             if (!empty($merk->gambar)) {
                 $fotoPath = public_path('merkimg/' . $merk->gambar);
                 if (file_exists($fotoPath)) {
@@ -106,7 +112,6 @@ class MerkController extends Controller
             return response()->json(['message' => 'Merk not found'], 404);
         }
 
-        // Hapus gambar jika ada
         if (!empty($merk->gambar)) {
             $fotoPath = public_path('merkimg/' . $merk->gambar);
             if (file_exists($fotoPath)) {
@@ -124,31 +129,60 @@ class MerkController extends Controller
      */
     public function getProductsByMerkId($id_merk)
     {
+        // Base URL for images
+        $baseImageUrl = url('produkimg');
+
         $product = DB::table('product')
             ->join('merk', 'product.id_merk', '=', 'merk.id')
             ->where('product.id_merk', $id_merk)
-            ->select('product.*', 'merk.id as id_merk', 'merk.nama_merk')
+            ->select('product.*', 'merk.id as id_merk', 'merk.nama_merk', 'merk.gambar as merk_gambar')
             ->get();
 
         if ($product->isEmpty()) {
             return response()->json(['message' => 'No products found for this merk'], 404);
         }
 
-        return response()->json($product, 200);
+        // Transform each product object to include image URL
+        $productWithImageUrl = $product->map(function ($item) use ($baseImageUrl) {
+            return [
+                'id' => $item->id,
+                'nama_product' => $item->nama_product,
+                'harga' => $item->harga,
+                'deskripsi' => $item->deskripsi,
+                'id_merk' => $item->id_merk,
+                'nama_merk' => $item->nama_merk,
+                'gambar_url' => $baseImageUrl . '/' . $item->gambar, // Combine base URL with image file name
+            ];
+        });
+
+        return response()->json($productWithImageUrl, 200);
     }
+
 
     /**
- * Get all brands.
- */
-public function getAll()
-{
-    $merk = Merk::all();
+     * Get all brands.
+     */
+    public function getAllMerk()
+    {
+        // Base URL for images
+        $baseImageUrl = url('merkimg');
 
-    if ($merk->isEmpty()) {
-        return response()->json(['message' => 'No brands found'], 404);
+        // Get all brands
+        $merk = Merk::all();
+
+        if ($merk->isEmpty()) {
+            return response()->json(['message' => 'No brands found'], 404);
+        }
+
+        // Transform each brand object to include image URL
+        $merkWithImageUrl = $merk->map(function ($item) use ($baseImageUrl) {
+            return [
+                'id' => $item->id,
+                'nama_merk' => $item->nama_merk,
+                'gambar_url' => $baseImageUrl . '/' . $item->gambar, // Combine base URL with image file name
+            ];
+        });
+
+        return response()->json($merkWithImageUrl, 200);
     }
-
-    return response()->json($merk, 200);
-}
-
 }

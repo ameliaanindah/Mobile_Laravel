@@ -62,8 +62,19 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        // Mendapatkan data user
+        $user = auth()->user();
+
+        // Mendapatkan nama dari data user
+        $name = $user->name;
+
+        // Kirim respons dengan nama user dan token
+        return response()->json([
+            'token' => $token,
+            'name' => $name
+        ]);
     }
+
 
     /**
      * Get the authenticated User.

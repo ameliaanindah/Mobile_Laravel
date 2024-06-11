@@ -98,11 +98,14 @@ class KategoriController extends Controller
      */
     public function getProductsByCategoryId($id_kategori = null)
     {
+        // Base URL for images
+        $baseImageUrl = url('produkimg');
+
         if ($id_kategori) {
             $product = DB::table('product')
                 ->join('kategori', 'product.id_kategori', '=', 'kategori.id')
                 ->where('product.id_kategori', $id_kategori)
-                ->select('product.*', 'kategori.id as id_kategori', 'kategori.nama_kategori')
+                ->select('product.*', 'kategori.id as id_kategori', 'kategori.nama_kategori', DB::raw("CONCAT('$baseImageUrl/', product.gambar) as gambar_url"))
                 ->get();
 
             if ($product->isEmpty()) {
@@ -111,7 +114,7 @@ class KategoriController extends Controller
         } else {
             $product = DB::table('product')
                 ->join('kategori', 'product.id_kategori', '=', 'kategori.id')
-                ->select('product.*', 'kategori.id as id_kategori', 'kategori.nama_kategori')
+                ->select('product.*', 'kategori.id as id_kategori', 'kategori.nama_kategori', DB::raw("CONCAT('$baseImageUrl/', product.gambar) as gambar_url"))
                 ->get();
 
             if ($product->isEmpty()) {
@@ -121,5 +124,10 @@ class KategoriController extends Controller
 
         return response()->json($product, 200);
     }
+
+
+    /**
+     * Get product detail by product ID.
+     */
 
 }
