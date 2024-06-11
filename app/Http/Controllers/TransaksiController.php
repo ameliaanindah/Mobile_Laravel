@@ -25,6 +25,8 @@ class TransaksiController extends Controller
             // // Ambil id_users dari pengguna yang sedang login
             $id_users = Auth::id();
 
+            //tes disini 
+
             // if (!$id_users) {
             //     return response()->json(['message' => 'Unauthorized'], 401);
             // }

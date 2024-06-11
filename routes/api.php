@@ -30,13 +30,13 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
         Route::get('merk/all', [MerkController::class, 'getAllMerk']);
         Route::get('/merk/updateimg', [MerkController::class, 'update']);
 
-            Route::get('products', [ProductController::class, 'index']); // Get all products
-            Route::post('product', [ProductController::class, 'store']); // Create a new product
-            Route::get('product/{id_product}', [ProductController::class, 'show']); // Get a single product by ID
-            Route::put('product/{id}', [ProductController::class, 'update']); // Update a product by ID
-            Route::delete('product/{id}', [ProductController::class, 'destroy']); // Delete a product by I
+        Route::get('products', [ProductController::class, 'index']); // Get all products
+        Route::post('product', [ProductController::class, 'store']); // Create a new product
+        Route::get('product/{id_product}', [ProductController::class, 'show']); // Get a single product by ID
+        Route::put('product/{id}', [ProductController::class, 'update']); // Update a product by ID
+        Route::delete('product/{id}', [ProductController::class, 'destroy']); // Delete a product by I
 
-            Route::post('/checkout', [TransaksiController::class, 'checkout'])->middleware('auth:api');
+        Route::post('/checkout', [TransaksiController::class, 'checkout'])->middleware('auth:api');
 
 
 Route::prefix('auth')->group(function () {
@@ -49,29 +49,4 @@ Route::get('/users/{id}', function ($id) {
 });
 
 });
-
-// Kategori routes
-Route::get('kategori', [KategoriController::class, 'index']);
-Route::post('kategori', [KategoriController::class, 'store']);
-Route::get('kategori/{id}', [KategoriController::class, 'show']);
-Route::put('kategori/{id}', [KategoriController::class, 'update']);
-Route::delete('kategori/{id}', [KategoriController::class, 'destroy']);
-
-// Merk routes
-Route::get('merk', [MerkController::class, 'index']);
-Route::post('merk', [MerkController::class, 'store']);
-Route::get('merk/{id}', [MerkController::class, 'show']);
-Route::put('merk/{id}', [MerkController::class, 'update']);
-Route::delete('merk/{id}', [MerkController::class, 'destroy']);
-
-// Product routes
-Route::get('product', [ProductController::class, 'index']);
-Route::post('product', [ProductController::class, 'store']);
-Route::get('product/{id}', [ProductController::class, 'show']);
-Route::put('product/{id}', [ProductController::class, 'update']);
-Route::delete('product/{id}', [ProductController::class, 'destroy']);
-
-// Route::middleware('auth:api')->group(function () {
-//     Route::resource('product', ProductController::class);
-// });
 
